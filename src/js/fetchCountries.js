@@ -1,23 +1,10 @@
-import debounce from 'lodash/debounce';
 import Notiflix from 'notiflix';
-const refs={
-    input: document.querySelector('#search-box'),
-    countriesList: document.querySelector(".country-list"),
-    countriesInfo: document.querySelector(".country-info")
-}
-refs.input.addEventListener('input', debounce(onInput,300));
-function onInput(e){
-    refs.countriesInfo.innerHTML="";
-    refs.countriesList.innerHTML="";
-    let value= e.target.value.trim();
-    if(value===""){
-        return;
-    }
+export default function fetchCountries(value){
     fetch(`https://restcountries.com/v3.1/name/${value}?fields=name,capital,population,flags,languages`)
     .then(responce=>{return responce.json()})
     .then(countries=>{
         if(countries.length===1){
-            return refs.countriesInfo.innerHTML=`<div class="head">
+            return document.querySelector(".country-info").innerHTML=`<div class="head">
             <img src="${countries[0].flags.svg}" height="20">
             <p>${countries[0].name.common}</p>
             </div>
@@ -34,11 +21,10 @@ function onInput(e){
             </li>`
         })
         .join('');
-        refs.countriesList.innerHTML=markup;
+        document.querySelector(".country-list").innerHTML=markup;
+        
     }
     )
     .catch(error=>{
         Notiflix.Notify.failure("Oops, there is no country with that name")
-    });
-    
-}
+    });}
